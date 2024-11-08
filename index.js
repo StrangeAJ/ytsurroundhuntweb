@@ -45,11 +45,16 @@ app.post('/', async (req, res) => {
     }
 
     try {
-        const results = await yts(req.body.query);
+        const results = await yts({
+            query: req.body.query,
+            pages: 2,
+            search: "video",
+        });
         const vids = results.videos;
         const vidIds = vids.map(vid => vid.videoId);
         const { vidIdswithSurroundSound, availableFormats } = await getSurroundingAudios(vidIds);
-
+        const length = vids.length;
+        console.log(length);
         const formattedResults = vidIdswithSurroundSound.map(vidId => {
             const video = vids.find(vid => vid.videoId === vidId);
             return {
