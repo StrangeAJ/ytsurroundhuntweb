@@ -16,6 +16,4 @@
     "yt-search": "^2.12.1",
     "express-generator": "^4.16.1"
   }
-  // add global install express-generator
-
 }
