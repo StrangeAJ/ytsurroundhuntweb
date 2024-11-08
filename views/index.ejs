@@ -35,14 +35,12 @@
         <thead>
             <tr>
                 <th>Format ID</th>
-                <th>Audio Bitrate</th>
             </tr>
         </thead>
         <tbody>
-            <% result.audio_qualities.forEach(quality => { %>
+            <% result.formats.forEach(format => { %>
             <tr>
-                <td><%= quality[0] %></td>
-                <td><%= quality[1] %></td>
+                <td><%= format %></td>
             </tr>
             <% }) %>
         </tbody>

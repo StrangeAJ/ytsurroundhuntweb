@@ -4,13 +4,14 @@
   "description": "Hunt for surround sound Youtube Videos",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "node index.js"
   },
   "author": "",
   "license": "ISC",
   "dependencies": {
     "@distube/ytdl-core": "^4.15.1",
     "ejs": "^3.1.10",
-    "express": "^4.21.1"
+    "express": "^4.21.1",
+    "yt-search": "^2.12.1"
   }
 }
