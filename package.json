@@ -4,7 +4,8 @@
   "description": "Hunt for surround sound Youtube Videos",
   "main": "index.js",
   "scripts": {
-    "start": "node index.js"
+    "start": "node index.js",
+    "build": "express build"
   },
   "author": "",
   "license": "ISC",
