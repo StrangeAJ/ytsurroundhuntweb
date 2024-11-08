@@ -2,9 +2,12 @@ const express = require('express');
 const path = require('path');
 const ytdl = require("@distube/ytdl-core");
 const yts = require('yt-search');
+// cors
+const cors = require('cors');
 
 const app = express();
-const port = 3000;
+app.use(cors());
+const port = process.env.PORT || 4000;
 
 
 async function getSurroundingAudios(vidIds) {

@@ -4,13 +4,13 @@
   "description": "Hunt for surround sound Youtube Videos",
   "main": "index.js",
   "scripts": {
-    "start": "node index.js",
-    "build": "npm install express-generator -g && express build"
+    "start": "node index.js"
   },
   "author": "",
   "license": "ISC",
   "dependencies": {
     "@distube/ytdl-core": "^4.15.1",
+    "cors": "^2.8.5",
     "ejs": "^3.1.10",
     "express": "^4.21.1",
     "yt-search": "^2.12.1"
