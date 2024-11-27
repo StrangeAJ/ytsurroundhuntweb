@@ -59,8 +59,10 @@ async function searchYouTube(query, invidiousUrl) {
     return { availableFormats };
 }
 
+
 app.set('view engine', 'ejs');
-app.use(express.static(path.join(__dirname, 'static')));
+app.set("views", __dirname + "/views");
+app.use(express.static(__dirname + "static"));
 app.use(express.urlencoded({ extended: true }));
 
 app.get('/', async (req, res) => {
