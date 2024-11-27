@@ -7,24 +7,33 @@ require('dotenv').config();
 const app = express();
 app.use(cors());
 const port = process.env.PORT || 10000;
-const INVIDIOUS_URL = process.env.INVIDIOUS_URL;
 
 const surround_formats = ['256', '258', '325', '327', '328', '338', '380'];
 let vids = [];
 
-async function searchYouTube(query) {
+async function fetchInvidiousInstances() {
+    try {
+        const response = await axios.get('https://api.invidious.io/instances.json?sort_by=type,health');
+        return response.data.map(instance => instance[1].uri);
+    } catch (error) {
+        console.error('Error fetching Invidious instances:', error);
+        return [];
+    }
+}
+
+async function searchYouTube(query, invidiousUrl) {
     let availableFormats = [];
     let vidIdswithSurroundSound = [];
-    const url = `${INVIDIOUS_URL}/api/v1/search?type=video&q=${query}`;
+    const url = `${invidiousUrl}/api/v1/search?type=video&q=${query}`;
     try {
         const response = await axios.get(url);
         vids = response.data;
         for (const video of vids) {
             const videoId = video.videoId;
-            const videoUrl = `${INVIDIOUS_URL}/api/v1/videos/${videoId}`;
+            const videoUrl = `${invidiousUrl}/api/v1/videos/${videoId}`;
             const videoResponse = await axios.get(videoUrl, {
                 headers: {
-                    'Host': INVIDIOUS_URL.split('//')[1],
+                    'Host': invidiousUrl.split('//')[1],
                     'Cookie': 'INVIDIOUS_SERVER_ID=2'
                 }
             });
@@ -40,7 +49,7 @@ async function searchYouTube(query) {
                     id: videoId,
                     formats : itags,
                     title: videoData.title,
-                    url: 'https://inv.nadeko.net/watch?v=' + videoId
+                    url: invidiousUrl + '/watch?v=' + videoId
                 });
             }
         }
@@ -54,20 +63,20 @@ app.set('view engine', 'ejs');
 app.use(express.static(path.join(__dirname, 'static')));
 app.use(express.urlencoded({ extended: true }));
 
-app.get('/', (req, res) => {
-    res.render('index', { results: null });
+app.get('/', async (req, res) => {
+    const instances = await fetchInvidiousInstances();
+    res.render('index', { results: null, instances });
 });
 
 app.post('/', async (req, res) => {
-    if (!req.body.query) {
-        return res.send("Please enter a valid url or keyword");
+    if (!req.body.query || !req.body.invidious_url) {
+        return res.send("Please enter a valid search term and select an Invidious URL.");
     }
 
     try {
-        const { availableFormats } = await searchYouTube(req.body.query);
-        // const responseForUI to be set according to availableFormats
-        console.log(availableFormats);
-        res.render('index', { results: availableFormats });
+        const { availableFormats } = await searchYouTube(req.body.query, req.body.invidious_url);
+        const instances = await fetchInvidiousInstances();
+        res.render('index', { results: availableFormats, instances });
     } catch (err) {
         console.error(err);
         res.send("An error occurred while processing your request.");
