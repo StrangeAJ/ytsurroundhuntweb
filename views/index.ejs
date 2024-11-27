@@ -1,52 +1,73 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>YouTube Search</title>
-    <link rel="stylesheet" href="/styles.css">
-</head>
-<body>
+    <link rel="stylesheet" href="/styles.css" />
+    <script
+      src="https://kit.fontawesome.com/811bf099c0.js"
+      crossorigin="anonymous"
+    ></script>
+  </head>
+  <body>
     <h1>YouTube Search</h1>
-    <button class="toggle-theme-button" onclick="toggleTheme()">Toggle Dark Theme</button>
+    <button class="toggle-theme-button" onclick="toggleTheme()">
+      Toggle Dark Theme
+    </button>
     <form method="post" onsubmit="showProgressBar()">
-        <input type="text" name="query" placeholder="Enter search term" required />
-        <button type="submit">Search</button>
+      <input
+        type="text"
+        name="query"
+        placeholder="Enter search term"
+        required
+      />
+      <button type="submit">Search</button>
     </form>
     <div id="progress-bar" class="progress-bar">
-        <div class="progress-bar-inner"></div>
+      <div class="progress-bar-inner"></div>
     </div>
     <% if (results) { %>
     <script>
-        updateProgress(<%= results.length %>);
-        setTimeout(() => {
-            hideProgressBar();
-        }, 500);
+      updateProgress(<%= results.length %>);
+      setTimeout(() => {
+          hideProgressBar();
+      }, 500);
     </script>
     <h2>Search Results</h2>
-    <% results.forEach(result => { %>
-    <h3>
-        <a href="<%= result.url %>" target="_blank">
-            <img src="https://www.youtube.com/s/desktop/6b8b1b0d/img/favicon_32x32.png" alt="YouTube" class="youtube-logo" />
-        </a>
-        <%= result.title %>
-    </h3>
-    <table border="1" style="margin: 0 auto">
-        <thead>
+    <div class="list-Of-videos">
+      <% results.forEach(result => { %>
+      <div class="videos">
+        <h3>
+          <a href="<%= result.url %>" target="_blank">
+            <i class="fa-brands fa-youtube" style="color: gray"></i>
+          </a>
+          <%= result.title %>
+        </h3>
+        <table border="1" style="margin: 0 auto">
+          <thead>
             <tr>
-                <th>Format ID</th>
+              <th>Format ID</th>
             </tr>
-        </thead>
-        <tbody>
+          </thead>
+          <tbody>
             <% result.formats.forEach(format => { %>
             <tr>
-                <td><%= format %></td>
+              <td>
+                <a
+                  href="https://inv.nadeko.net/latest_version?id=mv6VXX4EhzE&itag=<%= format %>"
+                >
+                  <%= format %>
+                </a>
+              </td>
             </tr>
             <% }) %>
-        </tbody>
-    </table>
-    <% }) %>
+          </tbody>
+        </table>
+      </div>
+      <% }) %>
+    </div>
     <% } %>
     <script src="/scripts.js"></script>
-</body>
+  </body>
 </html>
