@@ -80,7 +80,7 @@ app.post('/', async (req, res) => {
     try {
         const { availableFormats } = await searchYouTube(req.body.query, req.body.invidious_url);
         const instances = await fetchInvidiousInstances();
-        res.render('index', { results: availableFormats, instances });
+        res.render('index', { results: availableFormats, instances, invidiousUrl: req.body.invidious_url });
     } catch (err) {
         console.error(err);
         res.send("An error occurred while processing your request.");

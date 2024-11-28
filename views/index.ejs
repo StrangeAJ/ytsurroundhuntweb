@@ -40,9 +40,7 @@
       }, 500);
     </script>
     <h2>Search Results</h2>
-    <div class="list-Of-videos">
       <% results.forEach(result => { %>
-      <div class="videos">
         <h3>
           <a href="<%= result.url %>" target="_blank">
             <i class="fa-brands fa-youtube" style="color: gray"></i>
@@ -60,7 +58,7 @@
             <tr>
               <td>
                 <a
-                  href="https://inv.nadeko.net/latest_version?id=<%= result.id %>&itag=<%= format %>"
+                    href="<%= invidiousUrl %>/latest_version?id=<%= result.id %>&itag=<%= format %>"
                 >
                   <%= format %>
                 </a>
@@ -69,9 +67,7 @@
             <% }) %>
           </tbody>
         </table>
-      </div>
       <% }) %>
-    </div>
     <% } %>
     <script src="/scripts.js"></script>
   </body>
