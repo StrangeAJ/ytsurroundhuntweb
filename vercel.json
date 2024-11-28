@@ -13,7 +13,7 @@
         }
     ],
     "functions": {
-        "api/test.js": {
+        "*.js": {
           "maxDuration": 30 
     }
 }
