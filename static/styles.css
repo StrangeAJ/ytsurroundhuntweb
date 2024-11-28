@@ -1,3 +1,11 @@
+:root {
+	/* Theme */
+	--primary-color: #d8ff3d;
+	--light-color: #d0dffc;
+	--dark-color: #283b70;
+	--regular-font: 'Inter', sans-serif;
+}
+
 body {
     font-family: Arial, sans-serif;
     background-color: #f0f0f0;
@@ -87,3 +95,18 @@ button:hover {
     height: fit-content;
     width: fit-content;
 }
+
+.tag {
+	color: var(--light-color);
+	font-family: var(--regular-font);
+	font-size: 1rem;
+	border-radius: 100rem;
+	box-shadow: 0 0 0 2px var(--light-color);
+	background-color: transparent;
+	color: var(--dark-color);
+	font-weight: bold;
+	transition:
+		background-color 250ms ease,
+		box-shadow 250ms ease;
+}
+

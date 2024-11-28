@@ -13,8 +13,10 @@ let vids = [];
 
 async function fetchInvidiousInstances() {
     try {
-        const response = await axios.get('https://api.invidious.io/instances.json?sort_by=type,health');
-        return response.data.map(instance => instance[1].uri);
+        const response = await axios.get('https://api.invidious.io/instances.json?sort_by=type,users');
+        const instances = response.data.map((instance) => {
+            return {url:instance[1].uri  , type:instance[1].type, users:instance[1].users} });
+        return instances;
     } catch (error) {
         console.error('Error fetching Invidious instances:', error);
         return [];
