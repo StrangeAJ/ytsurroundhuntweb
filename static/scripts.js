@@ -29,26 +29,43 @@ async function onClickSubmit() {
 async function getVideoDetails(vids) {
     for (const vid of vids) {
         let id = vid.videoID;
-        const videoResponse = await fetch('/getVideoDetails', {
-            method: 'POST',
-            headers: myHeaders,
-            body: JSON.stringify({ videoId: id })
+        
+        // const videoResponse = await fetch('/getVideoDetails', {
+        //     method: 'POST',
+        //     headers: myHeaders,
+        //     body: JSON.stringify({ videoId: id })
+        // });
+
+        const url = "https://www.youtube.com/watch?v=" + req.body.videoId;
+        const response = await fetch(url);
+        const text = await response.text();
+
+        let ytInitialPlayerResponse = text.match(/var ytInitialPlayerResponse = ({.*?});/);
+        ytInitialPlayerResponse = ytInitialPlayerResponse[0].replace(/var ytInitialPlayerResponse = |;/g, '');
+        ytInitialPlayerResponse = JSON.parse(ytInitialPlayerResponse);
+        const adaptiveFormats = ytInitialPlayerResponse.streamingData.adaptiveFormats;
+        let rawAvaliableFormats = [];
+        adaptiveFormats.forEach(format => {
+            if (format.audioChannels && format.audioChannels > 2) { 
+                rawAvaliableFormats.push(format);
+            }
         });
+        // res.status(200);
+        // res.json(availableFormats);
+
+
+
         count++;
         updateProgress(count);
-        if (videoResponse.status === 200 && videoResponse.ok) {
-            const videoData = await videoResponse.json();
-            if (videoData.length === 0) {
+            if (rawAvaliableFormats.length === 0) {
                 console.log("No video data found");
             } else {
                 const url = `https://www.youtube.com/watch?v=${id}`;
-                const formats = videoData.map(format => format.itag);
+                const formats = rawAvaliableFormats.map(format => format.itag);
                 const name = vid.title;
                 availableFormats.push({ url, formats, name, id });
             }
-        } else {
-            console.error("An error occurred while processing your request.");
-        }
+        
         await new Promise(r => setTimeout(r, 300));
     }
     renderVideoDetails();
