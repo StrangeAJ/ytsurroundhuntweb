@@ -1,6 +1,11 @@
 let totalvideos = 0;
 let count = 0;
 const availableFormats = [];
+let myHeaders = new Headers();
+myHeaders.append('Content-Type', 'application/json');
+myHeaders.append('Accept', 'application/json');
+let verify = false;
+let url = "";
 
 function showProgressBar() {
     document.getElementById("progress-bar").style.display = "block";
@@ -11,22 +16,36 @@ async function onClickSubmit() {
     // get Form Data
     const query = document.getElementById("query").value;
     const invidiousUrl = document.getElementById("invidious_url").value;
-
-    var myHeaders = new Headers();
-    myHeaders.append('Content-Type', 'application/json');
-    myHeaders.append('Accept', 'application/json');
-
-
-    const vids = await fetch('/', {
+    const response = await fetch('/', {
         method: 'POST',
         headers: myHeaders,
         body: JSON.stringify({ query, invidious_url: invidiousUrl })
-    }).then(response => response.json());
+    });
+    if(response.headers.get('content-type').includes('text/html')) {
+        const text = await response.text();
+        const newWindow = window.open();
+        newWindow.document.write(text);
+        // close writing of the document
+        newWindow.document.close();
+        return;
+    }
+    vids = await response.json();
     console.log(vids);
-        totalvideos = vids.length;
-    for(let i = 0; i < vids.length; i++) {
-        let vid = vids[i];
-        console.log(vid);
+    totalvideos = vids.results.length || 0;
+    if (vids.length === 0) {
+        if(typeof vids === 'undefined') console.log("Server Error Occured");
+        hideProgressBar();
+     }
+    else {
+        console.log("Videos Found");
+        await getVideoDetails(vids.results, invidiousUrl);
+    }
+
+}
+
+async function getVideoDetails(vids, invidiousUrl) {
+    await vids.forEach(async (vid) => {
+        console.log("TYPE of vid is"+ typeof vid);
         const videoResponse = await fetch('/getVideoDetails', {
             method: 'POST',
             headers: myHeaders,
@@ -35,16 +54,28 @@ async function onClickSubmit() {
         count++;
         updateProgress(count);
         if (videoResponse.status === 200) {
-            const videoData = videoResponse.data;
+            const videoData = await videoResponse.json();
+            console.log(videoData);
             availableFormats.push(videoData);
         }
         else if (videoResponse.status === 204) {
             console.log("Video doesn't have surround sound formats");
         }
+        else if (videoResponse.status === 203) {
+            if(videoResponse.headers.get('content-type').includes('text/html')) {
+                const text = await videoResponse.text();
+                const newWindow = window.open();
+                newWindow.document.write(text);
+                newWindow.document.close();
+                return;
+            }
+        }
         else {
             console.error("An error occurred while processing your request.");
         }
-    };
+        // wait for 1 second before making the next request
+         await new Promise(r => setTimeout(r, 3000));
+    });
 }
 
 function hideProgressBar() {
