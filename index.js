@@ -14,14 +14,6 @@ app.use(express.json());
 
 const port = process.env.PORT || 3000;
 
-const surround_formats = ['256', '258', '325', '327', '328', '338', '380'];
-
-let setCookies = [];
-let headers = {
-    'Accept': 'application/json',
-    'Content-Type': 'application/json'
-};
-
 
 app.set('view engine', 'ejs');
 app.set("views", __dirname + "/views");
