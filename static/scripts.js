@@ -1,81 +1,57 @@
 let totalvideos = 0;
 let count = 0;
-const availableFormats = [];
 let myHeaders = new Headers();
 myHeaders.append('Content-Type', 'application/json');
 myHeaders.append('Accept', 'application/json');
-let verify = false;
-let url = "";
+let availableFormats = [];
 
 function showProgressBar() {
     document.getElementById("progress-bar").style.display = "block";
 }
 
 async function onClickSubmit() {
-    showProgressBar();
-    // get Form Data
     const query = document.getElementById("query").value;
-    const invidiousUrl = document.getElementById("invidious_url").value;
     const response = await fetch('/', {
         method: 'POST',
         headers: myHeaders,
-        body: JSON.stringify({ query, invidious_url: invidiousUrl })
+        body: JSON.stringify({ query })
     });
-    if(response.headers.get('content-type').includes('text/html')) {
-        const text = await response.text();
-        const newWindow = window.open();
-        newWindow.document.write(text);
-        // close writing of the document
-        newWindow.document.close();
-        return;
-    }
-    vids = await response.json();
-    console.log(vids);
-    totalvideos = vids.results.length || 0;
+    const vids = await response.json();
+    totalvideos = vids.length || 0;
     if (vids.length === 0) {
-        if(typeof vids === 'undefined') console.log("Server Error Occured");
+        console.error("No videos found");
         hideProgressBar();
-     }
-    else {
-        console.log("Videos Found");
-        await getVideoDetails(vids.results, invidiousUrl);
+    } else {
+        await getVideoDetails(vids);
     }
-
 }
 
-async function getVideoDetails(vids, invidiousUrl) {
-    await vids.forEach(async (vid) => {
-        console.log("TYPE of vid is"+ typeof vid);
+async function getVideoDetails(vids) {
+    for (const vid of vids) {
+        let id = vid.videoID;
         const videoResponse = await fetch('/getVideoDetails', {
             method: 'POST',
             headers: myHeaders,
-            body: JSON.stringify({ videoId: vid.videoId, invidious_url: invidiousUrl })
+            body: JSON.stringify({ videoId: id })
         });
         count++;
         updateProgress(count);
-        if (videoResponse.status === 200) {
+        if (videoResponse.status === 200 && videoResponse.ok) {
             const videoData = await videoResponse.json();
-            console.log(videoData);
-            availableFormats.push(videoData);
-        }
-        else if (videoResponse.status === 204) {
-            console.log("Video doesn't have surround sound formats");
-        }
-        else if (videoResponse.status === 203) {
-            if(videoResponse.headers.get('content-type').includes('text/html')) {
-                const text = await videoResponse.text();
-                const newWindow = window.open();
-                newWindow.document.write(text);
-                newWindow.document.close();
-                return;
+            if (videoData.length === 0) {
+                console.log("No video data found");
+            } else {
+                const url = `https://www.youtube.com/watch?v=${id}`;
+                const formats = videoData.map(format => format.itag);
+                const name = vid.title;
+                availableFormats.push({ url, formats, name, id });
             }
-        }
-        else {
+        } else {
             console.error("An error occurred while processing your request.");
         }
-        // wait for 1 second before making the next request
-         await new Promise(r => setTimeout(r, 3000));
-    });
+        await new Promise(r => setTimeout(r, 300));
+    }
+    renderVideoDetails();
 }
 
 function hideProgressBar() {
@@ -108,6 +84,54 @@ function toggleTheme() {
     setTheme(newTheme);
 }
 
+function renderVideoDetails() {
+    const resultsContainer = document.getElementById('results') || document.createElement('div');
+    resultsContainer.id = 'results';
+    resultsContainer.innerHTML = ''; // Clear previous results
+    availableFormats.forEach((result) => {
+        const videoElement = document.createElement('div');
+        videoElement.innerHTML = `
+            <h3>
+                <a href="${result.url}" target="_blank">
+                    <i class="fa-brands fa-youtube" style="color: gray"></i>
+                </a>
+                ${result.name}
+            </h3>
+            <table border="1" style="margin: 0 auto">
+                <thead>
+                    <tr>
+                        <th>Format ID</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    ${result.formats.map(format => `
+                        <tr>
+                            <td>
+                                <a href="https://inv.nadeko.net/latest_version?id=${result.id}&itag=${format}">
+                                    ${format}
+                                </a>
+                            </td>
+                        </tr>
+                    `).join('')}
+                </tbody>
+            </table>
+        `;
+        resultsContainer.appendChild(videoElement);
+    });
+    if (availableFormats.length === 0) {
+        resultsContainer.innerHTML = `
+            <h1>No MultiChannel Audio Found</h1>
+        `;
+    }
+    hideProgressBar();
+    document.body.appendChild(resultsContainer);
+}
+
+async function btnClick() {
+    showProgressBar();
+    await onClickSubmit();
+}
+
 window.onload = function () {
     hideProgressBar();
     const savedTheme = localStorage.getItem("theme");
@@ -119,9 +143,3 @@ window.onload = function () {
         }
     });
 };
-
-document.getElementById('search-form').addEventListener('submit', async function (event) {
-    event.preventDefault(); // Prevent the default form submission
-    showProgressBar();
-    await onClickSubmit();
-});
