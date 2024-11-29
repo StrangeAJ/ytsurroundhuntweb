@@ -4,6 +4,7 @@ let myHeaders = new Headers();
 myHeaders.append('Content-Type', 'application/json');
 myHeaders.append('Accept', 'application/json');
 let availableFormats = [];
+let vids = [];
 
 function showProgressBar() {
     document.getElementById("progress-bar").style.display = "block";
@@ -16,7 +17,32 @@ async function onClickSubmit() {
         headers: myHeaders,
         body: JSON.stringify({ query })
     });
-    const vids = await response.json();
+
+    const text = await response.text();
+
+    let ytInitialData = text.match(/var ytInitialData = ({.*?});/);
+    ytInitialData = ytInitialData[0].replace(/var ytInitialData = |;/g, '');
+    console.log(ytInitialData);
+    ytInitialData = JSON.parse(ytInitialData);
+    const contents = ytInitialData.contents;
+    const twoColumnSearchResultsRenderer = contents.twoColumnSearchResultsRenderer;
+    const primaryContents = twoColumnSearchResultsRenderer.primaryContents;
+    const sectionListRenderer = primaryContents.sectionListRenderer;
+    const conts = sectionListRenderer.contents;
+    conts.forEach(section => {
+        if (section.itemSectionRenderer && section.itemSectionRenderer.contents) {
+            section.itemSectionRenderer.contents.forEach(item => {
+                if (item.videoRenderer) {
+                    const videoRenderer = item.videoRenderer;
+                    const title = videoRenderer.title.runs[0].text;
+                    const videoID = videoRenderer.videoId;
+
+                    vids.push({ title, videoID });
+                }
+            });
+        }
+    });
+
     totalvideos = vids.length || 0;
     if (vids.length === 0) {
         console.error("No videos found");
@@ -29,24 +55,21 @@ async function onClickSubmit() {
 async function getVideoDetails(vids) {
     for (const vid of vids) {
         let id = vid.videoID;
-        
-        // const videoResponse = await fetch('/getVideoDetails', {
-        //     method: 'POST',
-        //     headers: myHeaders,
-        //     body: JSON.stringify({ videoId: id })
-        // });
-
-        const url = "https://www.youtube.com/watch?v=" + req.body.videoId;
-        const response = await fetch(url);
+        const response = await fetch('/getVideoDetails', {
+            method: 'POST',
+            headers: myHeaders,
+            body: JSON.stringify({ videoId: id })
+        });
         const text = await response.text();
-
+        console.log(text);
         let ytInitialPlayerResponse = text.match(/var ytInitialPlayerResponse = ({.*?});/);
         ytInitialPlayerResponse = ytInitialPlayerResponse[0].replace(/var ytInitialPlayerResponse = |;/g, '');
         ytInitialPlayerResponse = JSON.parse(ytInitialPlayerResponse);
+        console.log(ytInitialPlayerResponse);
         const adaptiveFormats = ytInitialPlayerResponse.streamingData.adaptiveFormats;
         let rawAvaliableFormats = [];
         adaptiveFormats.forEach(format => {
-            if (format.audioChannels && format.audioChannels > 2) { 
+            if (format.audioChannels && format.audioChannels > 2) {
                 rawAvaliableFormats.push(format);
             }
         });
@@ -57,15 +80,15 @@ async function getVideoDetails(vids) {
 
         count++;
         updateProgress(count);
-            if (rawAvaliableFormats.length === 0) {
-                console.log("No video data found");
-            } else {
-                const url = `https://www.youtube.com/watch?v=${id}`;
-                const formats = rawAvaliableFormats.map(format => format.itag);
-                const name = vid.title;
-                availableFormats.push({ url, formats, name, id });
-            }
-        
+        if (rawAvaliableFormats.length === 0) {
+            console.log("No video data found");
+        } else {
+            const url = `https://www.youtube.com/watch?v=${id}`;
+            const formats = rawAvaliableFormats.map(format => format.itag);
+            const name = vid.title;
+            availableFormats.push({ url, formats, name, id });
+        }
+
         await new Promise(r => setTimeout(r, 300));
     }
     renderVideoDetails();
