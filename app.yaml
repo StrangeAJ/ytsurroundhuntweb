@@ -8,6 +8,8 @@ runtime_config:
 instance_class: F1
 automatic_scaling:
   max_num_instances: 1
+  cpu_utilization:
+    target_utilization: 0.4
 
 handlers:
   - url: /.*
