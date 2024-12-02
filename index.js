@@ -22,6 +22,10 @@ app.get('/', async (req, res) => {
     res.render('index');
 });
 
+app.get('/help', async (req, res) => {
+    res.render('help');
+});
+
 
 app.post('/', async (req, res) => {
     if (!req.body.query) {
