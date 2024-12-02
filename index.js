@@ -75,7 +75,7 @@ app.post('/getVideoDetails', async (req, res) => {
     }
     try {
         const url = "https://www.youtube.com/watch?v=" + req.body.videoId;
-        const myHeaders = new Headers();
+        let myHeaders = new Headers();
         myHeaders.append('Content-Type', 'application/json');
         myHeaders.append('Accept', 'application/json');
         if(myHeaders.has('Host')) myHeaders.delete('Host');
