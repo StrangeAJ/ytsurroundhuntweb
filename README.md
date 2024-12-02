@@ -46,7 +46,7 @@ To run this project locally, follow these steps:
 
 ## Information about itags and codecs 📚
 
-![itags.md](itags.md)
+Read [itags.md](itags.md) or visit the [help](https://www.youtubesurround.site/help) section of [website](https://www.youtubesurround.site/). 
 
 ## Contributing 🤝
 
