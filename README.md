@@ -44,6 +44,10 @@ To run this project locally, follow these steps:
 2. Enter a search query in the input field.
 3. Click the search button to see the results and check for multiple audio channels.
 
+## Information about itags and codecs 📚
+
+![itags.md](itags.md)
+
 ## Contributing 🤝
 
 Contributions are welcome! Please fork the repository and create a pull request with your changes.

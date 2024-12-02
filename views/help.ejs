@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>YouTube Search</title>
+    <link rel="stylesheet" href="/styles.css" />
+    <link rel="stylesheet" href="/help.css" />
+</head>
+<body>
+    <form action="/">
+        <input class="home-page" type="submit" value="Home" />
+    </form>
+    <button class="mode-switch" onclick="toggleMode()">Toggle Dark Mode</button>
+
+<h2>🎵 YouTube Audio Itags Compatibility Table</h2>
+
+<table>
+  <thead>
+    <tr>
+      <th>🎛️ Itag</th>
+      <th>📂 Format</th>
+      <th>🎧 Codec</th>
+      <th>📊 Bitrate</th>
+      <th>🔊 Channels</th>
+      <th>📱 Android (Chrome/Firefox/YouTube/YT Music)</th>
+      <th>🍎 iOS (Safari/Chrome/Firefox/YouTube/YT Music)</th>
+      <th>💻 Windows (Chrome/Edge/Firefox)</th>
+      <th>🖥️ macOS (Chrome/Safari)</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>256</td>
+      <td>MP4</td>
+      <td>AAC (HE v1)</td>
+      <td>192 Kbps</td>
+      <td>5.1 Surround</td>
+      <td>⚠️ Partial (Chrome supports HE-AAC; others may downmix)</td>
+      <td>⚠️ Partial (Safari supports HE-AAC; others may downmix)</td>
+      <td>✅ Supported (Codec availability may vary)</td>
+      <td>✅ Supported on Safari; Chrome limited</td>
+    </tr>
+    <tr>
+      <td>258</td>
+      <td>MP4</td>
+      <td>AAC (LC)</td>
+      <td>384 Kbps</td>
+      <td>5.1 Surround</td>
+      <td>✅ Chrome and YouTube apps support</td>
+      <td>✅ Safari supports AAC; others partial</td>
+      <td>✅ Supported on Chrome, Edge, Firefox</td>
+      <td>✅ Supported on Safari; Chrome limited</td>
+    </tr>
+    <tr>
+      <td>325</td>
+      <td>MP4</td>
+      <td>DTSE (DTS Express)</td>
+      <td>384 Kbps</td>
+      <td>5.1 Surround</td>
+      <td>❌ Rare support; requires DTS decoder hardware or software</td>
+      <td>❌ Rare support; requires DTS decoder hardware</td>
+      <td>❌ Rarely supported; codec limitations</td>
+      <td>❌ Rarely supported; codec limitations</td>
+    </tr>
+    <tr>
+      <td>327</td>
+      <td>MP4</td>
+      <td>AAC (LC)</td>
+      <td>256 Kbps</td>
+      <td>5.1 Surround</td>
+      <td>⚠️ Partial: Chrome/YouTube app</td>
+      <td>✅ Safari/YouTube app supported</td>
+      <td>✅ Supported</td>
+      <td>✅ Supported</td>
+    </tr>
+    <tr>
+      <td>328</td>
+      <td>MP4</td>
+      <td>EAC3</td>
+      <td>384 Kbps</td>
+      <td>5.1 Surround</td>
+      <td>❌ Rare support on Android devices with Dolby Atmos</td>
+      <td>⚠️ Safari may support with Dolby Atmos; Chrome and YouTube limited</td>
+      <td>❌ Rare support; codec not widely available</td>
+      <td>✅ Supported on Safari with Dolby Atmos</td>
+    </tr>
+    <tr>
+      <td>338</td>
+      <td>WebM</td>
+      <td>Opus (VBR)</td>
+      <td>~480 Kbps (?)</td>
+      <td>Quadraphonic</td>
+      <td>✅ Supported on Chrome/Firefox apps</td>
+      <td>❌ Limited; Safari does not support Opus</td>
+      <td>✅ Supported on Chrome/Firefox</td>
+      <td>❌ Limited on Safari; Chrome supports</td>
+    </tr>
+    <tr>
+      <td>380</td>
+      <td>MP4</td>
+      <td>AC3</td>
+      <td>384 Kbps</td>
+      <td>5.1 Surround</td>
+      <td>❌ Limited to devices with AC3 codec support</td>
+      <td>⚠️ Safari may support AC3; others may downmix</td>
+      <td>❌ Rarely supported without third-party codec installation</td>
+      <td>✅ Supported in Safari with AC3 codec</td>
+    </tr>
+  </tbody>
+</table>
+
+<h3>🌟 Notes:</h3>
+<ul>
+    <li>🎶 <b>AAC (LC)</b> and <b>AAC (HE v1)</b> are widely supported but may downmix to stereo on unsupported setups.</li>
+    <li>🎛️ <b>DTSE</b>, <b>EAC3</b>, and <b>AC3</b> require specific hardware/software decoders.</li>
+    <li>💡 <b>Opus</b> has limited support on Safari; prefer Chrome/Firefox for full compatibility.</li>
+</ul>
+
+<script>
+    function getSystemTheme() {
+        return window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+    }
+
+    function setTheme(theme) {
+        document.body.classList.toggle('dark-mode', theme === 'dark');
+        localStorage.setItem('theme', theme);
+    }
+
+    function toggleMode() {
+        const currentTheme = document.body.classList.contains('dark-mode') ? 'dark' : 'light';
+        const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+        setTheme(newTheme);
+    }
+
+    const savedTheme = localStorage.getItem('theme');
+    const theme = savedTheme || getSystemTheme();
+    setTheme(theme);
+</script>
+</body>
+</html>
