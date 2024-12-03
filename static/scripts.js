@@ -23,12 +23,12 @@ async function onClickSubmit() {
     let ytInitialData = text.match(/var ytInitialData = ({.*?});/);
     ytInitialData = ytInitialData[0].replace(/var ytInitialData = |;/g, '');
     console.log(ytInitialData);
-    ytInitialData = JSON.parse(ytInitialData);
-    const contents = ytInitialData.contents;
-    const twoColumnSearchResultsRenderer = contents.twoColumnSearchResultsRenderer;
-    const primaryContents = twoColumnSearchResultsRenderer.primaryContents;
-    const sectionListRenderer = primaryContents.sectionListRenderer;
-    const conts = sectionListRenderer.contents;
+    ytInitialData = await JSON.parse(ytInitialData);
+    const contents = await ytInitialData.contents;
+    const twoColumnSearchResultsRenderer = await contents.twoColumnSearchResultsRenderer;
+    const primaryContents = await twoColumnSearchResultsRenderer.primaryContents;
+    const sectionListRenderer = await primaryContents.sectionListRenderer;
+    const conts = await sectionListRenderer.contents;
     conts.forEach(section => {
         if (section.itemSectionRenderer && section.itemSectionRenderer.contents) {
             section.itemSectionRenderer.contents.forEach(item => {
@@ -62,11 +62,10 @@ async function getVideoDetails(vids) {
         });
         const text = await response.text();
         console.log(text);
-        let ytInitialPlayerResponse = text.match(/var ytInitialPlayerResponse = ({.*?});/);
-        ytInitialPlayerResponse = ytInitialPlayerResponse[0].replace(/var ytInitialPlayerResponse = |;/g, '');
-        ytInitialPlayerResponse = JSON.parse(ytInitialPlayerResponse);
-        console.log(ytInitialPlayerResponse);
-        const adaptiveFormats = ytInitialPlayerResponse.streamingData.adaptiveFormats;
+        let ytInitialPlayerResponse = await text.match(/var ytInitialPlayerResponse = ({.*?});/);
+        ytInitialPlayerResponse = await ytInitialPlayerResponse[0].replace(/var ytInitialPlayerResponse = |;/g, '');
+        ytInitialPlayerResponse = await JSON.parse(ytInitialPlayerResponse);
+        const adaptiveFormats = await ytInitialPlayerResponse.streamingData.adaptiveFormats;
         let rawAvaliableFormats = [];
         adaptiveFormats.forEach(format => {
             if (format.audioChannels && format.audioChannels > 2) {
