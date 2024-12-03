@@ -176,6 +176,13 @@ window.onload = function () {
     const savedTheme = localStorage.getItem("theme");
     const theme = savedTheme || getSystemTheme();
     setTheme(theme);
+    // press the button when enter is pressed
+    document.getElementById("query").addEventListener("keyup", function (event) {
+        if (event.key === "Enter") {
+            event.preventDefault();
+            document.getElementById("submit").click();
+        }
+    });
     window.matchMedia("(prefers-color-scheme: dark)").addListener((e) => {
         if (!localStorage.getItem("theme")) {
             setTheme(e.matches ? "dark" : "light");
